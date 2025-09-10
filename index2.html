@@ -69,18 +69,16 @@
 <body>
     <div id="chatwindow">
         <div id="header">
-            SSO Test Bot
+            SSO Test Bot Dynamics SSO
         </div>
         <div id="subheader">
+            <a id="SSO_button" href="#" onclick="onSSObuttonClick()">SSO</a>
             <span id="loginStatus">You are not logged in on the website.</span>
             <a id="login" href="#" onclick="onSignInClick()">Log in</a>
             <a id="logout" href="#" onclick="onSignOutClick()">Log out</a>
         </div>
 
         <div id="webchat"> </div>
-    </div>
-    <div id="iframe">
-        <iframe src="https://copilotstudio.preview.microsoft.com/environments/7f609b76-f11e-ef39-9197-19e5198f8f19/bots/cr52d_agentManualAuth1/webchat?__version__=2" frameborder="0" style="width: 100%; height: 100%;"></iframe>
     </div>
 
     <script>
@@ -108,6 +106,24 @@
         };
 
         const msalInstance = new msal.PublicClientApplication(msalConfig);
+
+        async function onSSObuttonClick() {
+            try{
+                const accounts = msalInstance.getAllAccounts();
+
+                if (accounts.length > 0) {
+                    msalInstance.setActiveAccount(accounts[0]);
+                    user = accounts[0]
+                    document.getElementById("loginStatus").innerHTML = "Currently logged in as " + user.name + " on the website."
+
+                    // Render chat widget again to demonstrate that login credentials can be passed
+                    await renderChatWidget()
+                }
+            }catch (err) {
+                console.log(err);
+                console.log("SSO_failed")
+            }
+        }
 
         // Handle login request after user clicks on login button
         async function onSignInClick() {
